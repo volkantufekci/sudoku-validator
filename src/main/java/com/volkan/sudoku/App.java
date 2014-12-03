@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,14 +36,17 @@ public class App
     }
 
     private void parseTheSolutionFile() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("/Users/vol/Downloads/samples.txt"));
+//        FileReader reader = new FileReader("/Users/vol/Downloads/samples.txt");
+        List<String> lines = Files.readAllLines(
+                Paths.get("/Users/vol/Downloads/samples.txt"), StandardCharsets.UTF_8);
 
         int availableCpuCount = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(availableCpuCount);
 
-        String line;
+//        String line;
         int lineNumber = 0, skippedLineCount = 0;
-        while ( (line = reader.readLine() ) != null){
+//        while ( (line = reader.readLine() ) != null){
+        for (String line : lines){
             lineNumber++;
 
             if (shouldLineBeSkipped(line)) {
@@ -48,7 +55,8 @@ public class App
             }
 
             if (isValidLine(line)) {
-                executorService.submit(validateSolution(line, lineNumber));
+//                executorService.submit(validateSolution(line, lineNumber));
+                validateSolution2(line, lineNumber);
             } else {
                 invalidCount.incrementAndGet();
                 logger.warn("The line #{} is not well formed: {}", lineNumber, line);
@@ -74,6 +82,14 @@ public class App
 
     private int totalNumberOfSolutionLines(int lineNumber, int skippedLineCount) {
         return lineNumber-skippedLineCount;
+    }
+
+    private void validateSolution2(final String line, final int lineNumber) {
+        Solution solution = new Solution(line);
+        if (!solution.isValid()) {
+            invalidCount.incrementAndGet();
+            logger.info("Line #{} is an invalid solution: {}", lineNumber, line);
+        }
     }
 
     private Callable validateSolution(final String line, final int lineNumber) {
