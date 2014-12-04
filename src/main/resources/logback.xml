@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-    <appender name="perf4jConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
-        </encoder>
-    </appender>
 
     <!-- This file appender is used to output aggregated performance statistics -->
     <appender name="perf4jFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -28,11 +23,6 @@
 
     <logger name="com.volkan.sudoku" level="INFO" additivity="false">
         <appender-ref ref="STDOUT" />
-    </logger>
-
-    <logger name="org.perf4j.TimingLogger" additivity="false">
-        <level value="INFO"/>
-        <appender-ref ref="CoalescingStatistics"/>
         <appender-ref ref="perf4jFileAppender"/>
     </logger>
 
