@@ -3,33 +3,33 @@ package com.volkan.sudoku;
 import junit.framework.TestCase;
 
 
-public class AppTest extends TestCase
+public class SolutionFileParserTest extends TestCase
 {
-    App app;
+    SolutionFileParser solutionFileParser;
     String validLine;
 
-    public AppTest( String testName )
+    public SolutionFileParserTest(String testName)
     {
         super( testName );
-        app = new App("");
+        solutionFileParser = new SolutionFileParser("");
         validLine = "123456789578139624496872153952381467641297835387564291719623548864915372235748916";
     }
 
     public void testIsValidLine_shouldReturnFalse_ForLongerLine() {
         String longLine = "1234567895781396244968721539523814676412978353875642917196235488649153722357489161";
-        assertFalse(app.isValidLine(longLine));
+        assertFalse(solutionFileParser.isValidLine(longLine));
     }
 
     public void testIsValidLine_shouldReturnFalse_ForShorterLine() {
         String shortLine = "1";
-        assertFalse(app.isValidLine(shortLine));
+        assertFalse(solutionFileParser.isValidLine(shortLine));
     }
 
     public void testIsValidLine_ShouldReturnFalse_ForNonDigitValuesInLine() {
-        assertFalse(app.isValidLine("xyz"));
+        assertFalse(solutionFileParser.isValidLine("xyz"));
     }
 
     public void testIsValidLine_ShouldReturnTrue_ForValidLengthDigitValuesInLine() {
-        assertTrue(app.isValidLine(validLine));
+        assertTrue(solutionFileParser.isValidLine(validLine));
     }
 }
