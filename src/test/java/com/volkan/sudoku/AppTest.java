@@ -1,47 +1,39 @@
 package com.volkan.sudoku;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
-/**
- * Unit test for simple App.
- */
+
 public class AppTest extends TestCase
 {
     private static final int SIZE = 9;
     App app;
-    String line = "123456789578139624496872153952381467641297835387564291719623548864915372235748916";
+    String validLine;
+    Solution solution;
 
-    Solution solution = new Solution(line);
-
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
     public AppTest( String testName )
     {
         super( testName );
-        app = new App();
+        app = new App("");
+        validLine = "123456789578139624496872153952381467641297835387564291719623548864915372235748916";
+        solution = new Solution(validLine);
     }
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( AppTest.class );
-    }
-
-    public void testValidateLine_shouldReturnFalse_ForLongerLine() {
+    public void testIsValidLine_shouldReturnFalse_ForLongerLine() {
         String longLine = "1234567895781396244968721539523814676412978353875642917196235488649153722357489161";
         assertFalse(app.isValidLine(longLine));
     }
 
-    public void testValidateLine_shouldReturnFalse_ForShorterLine() {
+    public void testIsValidLine_shouldReturnFalse_ForShorterLine() {
         String shortLine = "1";
         assertFalse(app.isValidLine(shortLine));
+    }
+
+    public void testIsValidLine_ShouldReturnFalse_ForNonDigitValuesInLine() {
+        assertFalse(app.isValidLine("xyz"));
+    }
+
+    public void testIsValidLine_ShouldReturnTrue_ForValidLengthDigitValuesInLine() {
+        assertTrue(app.isValidLine(validLine));
     }
 
     public void testConstructBoardFromLine() {

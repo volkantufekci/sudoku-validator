@@ -19,20 +19,29 @@ public class App
 {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
     private final AtomicInteger invalidCount;
+    private final String solutionFilePath;
 
-    public App() {
+    public App(String solutionFilePath) {
+        this.solutionFilePath = solutionFilePath;
         invalidCount = new AtomicInteger(0);
     }
 
     public static void main( String[] args ) throws IOException {
-        App app = new App();
+        if (args.length != 1) {
+            logger.error("Missing solution file path!\n" +
+                    "Usage: java -jar sudoku-0.0.1.jar <solution_file_path>");
+            System.exit(-1);
+        }
+
+        App app = new App(args[0]);
         StopWatch stopWatch = new LoggingStopWatch("File Parse");
         app.parseTheSolutionFile();
         stopWatch.stop();
     }
 
     private void parseTheSolutionFile() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("/Users/vol/Downloads/samples.txt"));
+        logger.info("Solutions are being read from {}", solutionFilePath);
+        BufferedReader reader = new BufferedReader(new FileReader(solutionFilePath));
 
         int availableCpuCount = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(availableCpuCount);
@@ -62,6 +71,10 @@ public class App
             logger.error("ExecutorService is interrupted", e);
         }
 
+        logResults(lineNumber, skippedLineCount);
+    }
+
+    private void logResults(int lineNumber, int skippedLineCount) {
         int totalLineCountOfSolutions = totalNumberOfSolutionLines(lineNumber, skippedLineCount);
         int validLineCount = validLineCount(invalidCount.get(), totalLineCountOfSolutions);
         logger.info("{} solutions are read! Valid Solution Count={}, Invalid Solution Count={}",
@@ -77,20 +90,19 @@ public class App
     }
 
     private Callable validateSolution(final String line, final int lineNumber) {
-        Callable callable = new Callable() {
+
+        return new Callable() {
             @Override
             public Object call() throws Exception {
                 Solution solution = new Solution(line);
                 if (!solution.isValid()) {
                     invalidCount.incrementAndGet();
-                    logger.info("Line #{} is an invalid solution: {}", lineNumber, line);
+                    logger.debug("Line #{} is an invalid solution: {}", lineNumber, line);
                 }
 
                 return null;
             }
         };
-
-        return callable;
     }
 
     private boolean shouldLineBeSkipped(String line) {
@@ -98,7 +110,7 @@ public class App
     }
 
     public boolean isValidLine(String line) {
-        return line.length() == Solution.SIZE * Solution.SIZE;
+        return line.matches("\\d*") && (line.length() == Solution.SIZE * Solution.SIZE);
     }
 
 
